@@ -72,3 +72,14 @@ global_final_matrix <- generate_pattern(global_final_matrix, No_conflict_pos)
 
 global_final_matrix_no_dup_no_conflict <- strsplit(unlist(global_final_matrix), split = "")
 write_fasta(global_final_matrix, "global_final_matrix.fasta")
+
+# Scripts to split the matrix into 5 parts
+samples_name <- names(global_final_matrix)
+set.seed(2024)
+randomly_rearrage_samples <- sample(samples_name)
+chunk_number <- 5
+sample_name_across_5_parts <- split(randomly_rearrage_samples,  cut(seq_along(randomly_rearrage_samples), chunk_number, labels = FALSE))
+
+for (i in seq_along(sample_name_across_5_parts)){
+    write_fasta(global_final_matrix[sample_name_across_5_parts[[i]]], paste0("global_final_matrix_", i, ".fasta"))
+}
