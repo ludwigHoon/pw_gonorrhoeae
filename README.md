@@ -16,7 +16,7 @@ The zip file containing all the assembled contigs need to be unzipped with `7zz 
     - awk '{print $2}' snippy_output/global.tab > global_SNP_POS.txt
 - See `Scripts/process_snp_matrix.R` for processing and extracting unique sequences in SNP matrix.
 
-Final Matrices can be accessed at [dataverse](https://dataverse.harvard.edu/privateurl.xhtml?token=fcae4447-ad20-482a-b0cf-b4179ff36a5a), note SNP matrix containing all samples is split into 5 files due to the size.
+Final Matrices can be accessed at [dataverse](https://doi.org/10.7910/DVN/K2AECH), note SNP matrix containing all samples is split into 5 files due to the size.
 For SNP position reference, see `Data/FIN_AU_SNP_POS.csv` and `Data/FIN_global_SNP_POS.csv`
 
 ## Some statistics
@@ -40,5 +40,9 @@ Global samples:
 
 # Running minSNPs
 ## Cefixime resistance
-- AU only: `Result/Cefixime_percent_AU_sample.tsv` and `Result/Cefixime_mcc_AU_sample.tsv`.
-- Global sample: `Result/Cefixime_percent_global_sample.tsv` and `Result/Cefixime_mcc_global_sample.tsv`.
+- AU only:
+    - Script: `Scripts\AU_Cefixime.R` and `Scripts\AU_Cefixime2global.R`
+    - Results: `Result/Cefixime_percent_AU_sample.tsv`, `Result/Cefixime_mcc_AU_sample.tsv`, `Result\Cefixime_AU2global.csv`
+- Global sample:
+    - Script: `Scripts\global_Cefixime.R` and `Scripts\global_Cefixime2All.R`
+    - Results: `Result\Cefixime_mcc_global_<n>.tsv`, `Result\Cefixime_percent_global_<n>.tsv`, `Result\Cefixime_set2global.csv`, with `<n>` represent the subset ID (1-5) used to identify the SNP sets.
