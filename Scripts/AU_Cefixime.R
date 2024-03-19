@@ -4,10 +4,6 @@ library(BiocParallel)
 
 run_analysis <- function(metadata, snp_matrix){
     BP <- MulticoreParam(workers = 120)
-    # Intermediate resistance is considered as resistance
-    for (drug in c("Cefixime", "Azithromycin", "Ceftriaxone", "Ciprofloxacin", "Penicillin", "Sulfonamides", "Spectinomycin", "Tetracycline")){
-        metadata[[drug]] <- ifelse(metadata[[drug]] == "INTERMEDIATE", "RESISTANT", metadata[[drug]])
-    }
 
     GOI <- metadata[Cefixime == "RESISTANT"]$Genome_Name
     timestamp("--- Running Percent ---")

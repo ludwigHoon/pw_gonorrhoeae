@@ -9,7 +9,7 @@ SNPs_pos <- fread("FIN_AU_SNP_POS.csv")
 REF_GENOME_pos <- data.table(selected_snps = unique(unlist(results)),
     reference_position = SNPs_pos[match(unique(unlist(results)), Fasta_Position)]$Reference_Position)[order(selected_snps)]
 
-# Copying reference fasta file to snippy_output to simplify analysis
+# Copying reference fasta file to snippy_output to simplify analysis # only needed once
 system("mkdir snippy_output/Reference")
 system("cp reference_TUM19854.fasta snippy_output/Reference/snps.aligned.fa")
 
