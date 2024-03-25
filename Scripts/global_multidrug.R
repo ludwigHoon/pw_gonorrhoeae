@@ -2,14 +2,16 @@
 library(BiocParallel)
 
 # Multidrug - binary analysis
-global_binary <- bplapply(c(1:5), function(parameters){
+global_binary <- bplapply(c(3), function(parameters){
     library(data.table)
     library(minSNPs)
     library(BiocParallel)
 
     BP <- MulticoreParam(workers = 80)
     file <- parameters
-    metrics <- c("mcc", "percent")
+    metrics <- c(
+    #"mcc",
+    "percent")
     
     # Read in the global matrix
     global_matrix <- read_fasta(paste0("global_final_matrix_", file, ".fasta"))
@@ -21,13 +23,15 @@ global_binary <- bplapply(c(1:5), function(parameters){
     ## Cefixime + Ciprofloxacin
     ## Ciprofloxacin + Penicillin
     GOIS <- list(
-        Cefixime_Ciprofloxacin = metadata[Cefixime == "RESISTANT" & Ciprofloxacin == "RESISTANT"]$Genome_Name,
-        Ciprofloxacin_Penicillin = metadata[Ciprofloxacin == "RESISTANT" & Penicillin == "RESISTANT"]$Genome_Name
+        Cefixime_Ciprofloxacin = metadata[Cefixime == "RESISTANT" & Ciprofloxacin == "RESISTANT"]$Genome_Name#,
+        #Ciprofloxacin_Penicillin = metadata[Ciprofloxacin == "RESISTANT" & Penicillin == "RESISTANT"]$Genome_Name
     )
     for (nGOI in names(GOIS)){
         for (metric in metrics){
             GOI <- GOIS[[nGOI]]
             GOI <- GOI[GOI %in% names(global_matrix)]
+            print(nGOI)
+            print(GOI)
             print(paste("Running", metric, "for", file, "at:", Sys.time()))
             result <- find_optimised_snps(seqc = global_matrix, metric = metric, goi = GOI,
                 number_of_result = 10, max_depth = 5, bp = BP,
@@ -66,7 +70,7 @@ global_multiclass <- bplapply(c(1:5), function(parameters){
     ## Cefixime + Ciprofloxacin
     ## Ciprofloxacin + Penicillin
     nGOIS <- c(
-        #"Cefixime_Ciprofloxacin",
+        "Cefixime_Ciprofloxacin",
         "Ciprofloxacin_Penicillin")
     for (nGOI in nGOIS){
         mod_metadata <- metadata
