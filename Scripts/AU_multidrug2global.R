@@ -74,7 +74,7 @@ run_binary_generalisation("Ciprofloxacin_Penicillin")
 run_binary_generalisation("Cefixime_Ciprofloxacin")
 
 
-run_multiclass_generalisation <- function(target_class){
+run_multiclass_generalisation <- function(target_class, get_subclass = FALSE){
     mcc_multi_result <-paste0(target_class, "_percent_AU_sample.tsv")
     simpson_by_group_result <- paste0(target_class, "_mcc_AU_sample.tsv")
     results <- lapply(c(mcc_multi_result, simpson_by_group_result), process_result_file)
@@ -118,7 +118,9 @@ run_multiclass_generalisation <- function(target_class){
     priority <- generate_prioritisation(AU_metadata)
 
     mcc_multi_snp_sets <- lapply(results$mcc_multi, match, REF_GENOME_pos$selected_snps)
-    PERF_mcc_multi_snp_sets <- summarise_result(snp_sets = mcc_multi_snp_sets, training_seqs = AU_only, validation_seqs = VAL_seq, training_metadata = AU_metadata, validation_metadata = VAL_metadata, priority = priority)
+    PERF_mcc_multi_snp_sets <- summarise_result(snp_sets = mcc_multi_snp_sets, training_seqs = AU_only,
+        validation_seqs = VAL_seq, training_metadata = AU_metadata, validation_metadata = VAL_metadata,
+        priority = priority, is_multi = (!get_subclass))
     PERF_mcc_multi_snp_sets$type <- "mcc_multi"
     PERF_mcc_multi_snp_sets$snp_sets <- sapply(PERF_mcc_multi_snp_sets$snp_sets, function(sset){
         sset <- as.numeric(unlist(strsplit(sset, split = ", ")))
@@ -126,7 +128,9 @@ run_multiclass_generalisation <- function(target_class){
     })
 
     simpson_by_group_snp_sets <- lapply(results$simpson_by_group, match, REF_GENOME_pos$selected_snps)
-    PERF_simpson_by_group_snp_sets <- summarise_result(snp_sets = simpson_by_group_snp_sets, training_seqs = AU_only, validation_seqs = VAL_seq, training_metadata = AU_metadata, validation_metadata = VAL_metadata, priority = priority)
+    PERF_simpson_by_group_snp_sets <- summarise_result(snp_sets = simpson_by_group_snp_sets,
+        training_seqs = AU_only, validation_seqs = VAL_seq, training_metadata = AU_metadata,
+        validation_metadata = VAL_metadata, priority = priority, is_multi = (!get_subclass))
     PERF_simpson_by_group_snp_sets$type <- "simpson_by_group"
     PERF_simpson_by_group_snp_sets$snp_sets <- sapply(PERF_simpson_by_group_snp_sets$snp_sets, function(sset){
         sset <- as.numeric(unlist(strsplit(sset, split = ", ")))
@@ -134,7 +138,11 @@ run_multiclass_generalisation <- function(target_class){
     })
 
     all_results <- rbind(PERF_mcc_multi_snp_sets, PERF_simpson_by_group_snp_sets)
-    fwrite(all_results, paste0("multiclass_", target_class, "_AU2global.csv"), row.names = FALSE)
+    if (get_subclass){
+        fwrite(all_results, paste0("multiclass_", target_class, "_subclass_AU2global.csv"), row.names = FALSE)
+    } else {
+        fwrite(all_results, paste0("multiclass_", target_class, "_AU2global.csv"), row.names = FALSE)
+    }
 }
 
 ## Multiple class
@@ -144,3 +152,10 @@ run_multiclass_generalisation("Ciprofloxacin_Penicillin")
 
 ### Cefixime + Ciprofloxacin
 run_multiclass_generalisation("Cefixime_Ciprofloxacin")
+
+### Ciprofloxacin + Penicillin
+run_multiclass_generalisation("Ciprofloxacin_Penicillin", get_subclass = TRUE)
+
+
+### Cefixime + Ciprofloxacin
+run_multiclass_generalisation("Cefixime_Ciprofloxacin", get_subclass = TRUE)

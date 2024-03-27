@@ -80,7 +80,7 @@ run_binary_generalisation("Ciprofloxacin_Penicillin")
 run_binary_generalisation("Cefixime_Ciprofloxacin")
 
 
-run_multiclass_generalisation <- function(target_class){
+run_multiclass_generalisation <- function(target_class, get_subclass = FALSE){
     mod_metadata <- metadata
     for (drug in c("Cefixime", "Azithromycin", "Ceftriaxone", "Ciprofloxacin", "Penicillin", "Sulfonamides", "Spectinomycin", "Tetracycline")){
         mod_metadata[[drug]] <- ifelse(mod_metadata[[drug]] == "RESISTANT", "R", "S")
@@ -116,7 +116,7 @@ run_multiclass_generalisation <- function(target_class){
             training_seqs = O_seq, validation_seqs = N_seq,
             training_metadata = O_metadata,
             validation_metadata = N_metadata,
-            priority = priority, is_multi = TRUE
+            priority = priority, is_multi = (!get_subclass)
         )
         result$type <- metric
         result$set <- oset
@@ -128,7 +128,11 @@ run_multiclass_generalisation <- function(target_class){
         sset <- as.numeric(unlist(strsplit(sset, split = ", ")))
         paste0(SNPs_pos[match(sset, SNPs_pos$Fasta_Position)]$Reference_Position, collapse = ", ")
     })
-    fwrite(result_dt, paste0("multiclass_", target_class, "_global.csv"), row.names = FALSE)
+    if (get_subclass){
+        fwrite(result_dt, paste0("multiclass_", target_class, "_subclass_global.csv"), row.names = FALSE)
+    } else {
+        fwrite(result_dt, paste0("multiclass_", target_class, "_global.csv"), row.names = FALSE)
+    }
 }
 
 ## Multiple class
@@ -140,3 +144,8 @@ run_multiclass_generalisation("Ciprofloxacin_Penicillin")
 run_multiclass_generalisation("Cefixime_Ciprofloxacin")
 
 
+run_multiclass_generalisation("Ciprofloxacin_Penicillin", get_subclass = TRUE)
+
+
+### Cefixime + Ciprofloxacin
+run_multiclass_generalisation("Cefixime_Ciprofloxacin", get_subclass = TRUE)
